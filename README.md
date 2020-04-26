@@ -1,5 +1,5 @@
 # Standalone payload.elf loader
-This is a payload that should be run with [MochaLite](https://github.com/wiiu-env/MochaLite) before the System Menu.
+This is .rpx is meant to run in a envrionment with sd and codegen (jit) access.
 It's exploits the Cafe OS and maps 8 MiB of usable memory from 0x30000000...0x30800000 (physical address) to 0x00800000... 0x01000000 (virtual address) where a payload will be loaded. You may need to hook into the kernel and patch out some thing to gain persistent access to this area.
 The loaded `hook_payload.elf` needs to be mapped to this memory area.
 
