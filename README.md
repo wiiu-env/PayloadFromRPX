@@ -20,9 +20,10 @@ If you change any IOSU related changes, you need to do a `make clean` before com
 - orboditilt
 - Maschell
 - many many more
+
 Parts taken from: 
-https://github.com/FIX94/haxchi
-https://github.com/dimok789/mocha
-https://github.com/dimok789/homebrew_launcher
-https://github.com/wiiudev/libwiiu/blob/master/kernel/gx2sploit/
+- https://github.com/FIX94/haxchi  
+- https://github.com/dimok789/mocha  
+- https://github.com/dimok789/homebrew_launcher  
+- https://github.com/wiiudev/libwiiu/blob/master/kernel/gx2sploit/  
 [...]
