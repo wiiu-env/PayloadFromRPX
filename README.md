@@ -14,6 +14,20 @@ Make you to have [wut](https://github.com/devkitPro/wut/) installed and use the 
 make
 ```
 
+## Building using the Dockerfile
+
+It's possible to use a docker image for building. This way you don't need anything installed on your host system.
+
+```
+# Build docker image (only needed once)
+docker build . -t payloadfromrpx-builder
+
+# make 
+docker run -it --rm -v ${PWD}:/project payloadfromrpx-builder make
+
+# make clean
+docker run -it --rm -v ${PWD}:/project payloadfromrpx-builder make clean
+```
 
 ## Credits
 - orboditilt
