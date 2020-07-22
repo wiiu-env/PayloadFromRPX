@@ -7,3 +7,6 @@ relocator.h
 *.depend
 *.cscope_file_list
 *.layout
+CMakeLists.txt
+.idea/
+cmake-build-debug/
