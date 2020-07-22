@@ -2,3 +2,5 @@ build/
 *.bin
 *.bin.h
 *.elf
+ios_usb.c
+ios_usb.h

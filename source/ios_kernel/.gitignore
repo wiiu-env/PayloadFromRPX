@@ -2,3 +2,5 @@ build/
 *.bin
 *.bin.h
 *.elf
+ios_kernel.c
+ios_kernel.h
