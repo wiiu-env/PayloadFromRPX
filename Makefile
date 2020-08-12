@@ -103,11 +103,9 @@ $(BUILD): $(CURDIR)/source/ios_kernel/ios_kernel.bin.h
 	@$(MAKE) -j1 --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 $(CURDIR)/source/ios_kernel/ios_kernel.bin.h: $(CURDIR)/source/ios_usb/ios_usb.bin.h
-	@$(MAKE) --no-print-directory -C $(CURDIR)/source/ios_kernel -f $(CURDIR)/source/ios_kernel/Makefile
 	@$(MAKE) -j1 --no-print-directory -C $(CURDIR)/source/ios_kernel -f $(CURDIR)/source/ios_kernel/Makefile
 
 $(CURDIR)/source/ios_usb/ios_usb.bin.h: 
-	@$(MAKE) --no-print-directory -C $(CURDIR)/source/ios_usb -f $(CURDIR)/source/ios_usb/Makefile
 	@$(MAKE) -j1 --no-print-directory -C $(CURDIR)/source/ios_usb -f $(CURDIR)/source/ios_usb/Makefile
 #-------------------------------------------------------------------------------
 clean:

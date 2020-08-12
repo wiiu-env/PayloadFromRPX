@@ -56,7 +56,6 @@ $(PROJECTNAME).bin: $(PROJECTNAME).elf
 	@$(OBJCOPY) -j .text -j .rodata -j .data -O binary $(PROJECTNAME).elf $@
 	
 $(PROJECTNAME).bin.h: $(PROJECTNAME).bin
-	@xxd -i $< | sed "s/unsigned/static const unsigned/g;s/$(PROJECTNAME)$*/$(PROJECTNAME)/g" > $@
 	@raw2c $<
 	@cp $(PROJECTNAME).c $@
 	
