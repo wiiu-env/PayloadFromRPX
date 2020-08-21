@@ -2,22 +2,21 @@
 #include <string.h>
 
 #include <coreinit/debug.h>
-#include <coreinit/thread.h>
 #include <coreinit/cache.h>
 #include <coreinit/memdefaultheap.h>
 #include <whb/sdcard.h>
 #include <whb/file.h>
 #include <whb/log.h>
+#include <utils/logger.h>
 
 #include "elf_abi.h"
-
 
 int32_t LoadFileToMem(const char *relativefilepath, char **fileOut, uint32_t *sizeOut) {
     char path[256];
     int result = 0;
     char *sdRootPath = "";
     if (!WHBMountSdCard()) {
-        WHBLogPrintf("Failed to mount SD Card...");
+        DEBUG_FUNCTION_LINE("Failed to mount SD Card...");
         result = -1;
         goto exit;
     }
@@ -25,12 +24,12 @@ int32_t LoadFileToMem(const char *relativefilepath, char **fileOut, uint32_t *si
     sdRootPath = WHBGetSdCardMountPath();
     sprintf(path, "%s/%s", sdRootPath, relativefilepath);
 
-    WHBLogPrintf("Loading file %s.", path);
+    DEBUG_FUNCTION_LINE("Loading file %s.", path);
 
     *fileOut = WHBReadWholeFile(path, sizeOut);
     if (!(*fileOut)) {
         result = -2;
-        WHBLogPrintf("WHBReadWholeFile(%s) returned NULL", path);
+        DEBUG_FUNCTION_LINE("WHBReadWholeFile(%s) returned NULL", path);
         goto exit;
     }
 
@@ -74,16 +73,19 @@ static unsigned int get_section(unsigned char *data, const char *name, unsigned 
     for (i = 0; i < ehdr->e_shnum; i++) {
         const char *section_name = ((const char *) data) + shdr[ehdr->e_shstrndx].sh_offset + shdr[i].sh_name;
         if (strcmp(section_name, name) == 0) {
-            if (addr)
+            if (addr) {
                 *addr = shdr[i].sh_addr;
-            if (size)
+            }
+            if (size) {
                 *size = shdr[i].sh_size;
+            }
             return shdr[i].sh_offset;
         }
     }
 
-    if (fail_on_not_found)
+    if (fail_on_not_found) {
         OSFatal((char *) name);
+    }
 
     return 0;
 }

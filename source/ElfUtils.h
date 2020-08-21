@@ -1,5 +1,4 @@
-#ifndef ELF_LOADING_H
-#define    ELF_LOADING_H
+#pragma once
 
 #include <stdint.h>
 
@@ -13,6 +12,3 @@ uint32_t load_loader_elf_from_sd(unsigned char *baseAddress, const char *relativ
 #ifdef __cplusplus
 }
 #endif
-
-#endif    /* ELF_LOADING_H */
-

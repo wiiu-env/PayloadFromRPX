@@ -1,40 +1,23 @@
 #include <stdio.h>
 #include <string.h>
-#include <vector>
-
-#include <coreinit/ios.h>
 #include <coreinit/time.h>
 
-#include <coreinit/systeminfo.h>
 #include <coreinit/foreground.h>
-
-#include <nsysnet/socket.h>
 
 #include <proc_ui/procui.h>
 #include <coreinit/thread.h>
 
-#include <whb/proc.h>
 #include <whb/log.h>
 #include <whb/log_udp.h>
 #include <sysapp/launch.h>
-#include <coreinit/exit.h>
+#include <sysapp/title.h>
 #include <coreinit/cache.h>
-#include <coreinit/dynload.h>
 #include <vpad/input.h>
 #include "utils/logger.h"
-#include "utils/utils.h"
 #include "ElfUtils.h"
 #include "ios_exploit.h"
 
 #include "gx2sploit.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#ifdef __cplusplus
-}
-#endif
 
 bool CheckRunning() {
 
@@ -55,8 +38,6 @@ bool CheckRunning() {
     }
     return true;
 }
-
-extern "C" uint64_t _SYSGetSystemApplicationTitleId(int);
 
 int main(int argc, char **argv) {
     WHBLogUdpInit();
@@ -105,13 +86,13 @@ int main(int argc, char **argv) {
     DEBUG_FUNCTION_LINE("ProcUIInit done");
 
     if (loadWithoutHacks) {
-        DEBUG_FUNCTION_LINE("Load system menu");
-        // Restore the default title id to the normal wii u menu.
-        unsigned long long sysmenuIdUll = _SYSGetSystemApplicationTitleId(0);
+        DEBUG_FUNCTION_LINE("Load Wii U Menu");
+        // Restore the default title id to the normal Wii U Menu.
+        unsigned long long sysmenuIdUll = _SYSGetSystemApplicationTitleId(SYSTEM_APP_ID_HOME_MENU);
         memcpy((void *) 0xF417FFF0, &sysmenuIdUll, 8);
         DCStoreRange((void *) 0xF417FFF0, 0x8);
 
-        DEBUG_FUNCTION_LINE("THIS IS A TEST %016llX\n", sysmenuIdUll);
+        DEBUG_FUNCTION_LINE("Forcing start of title: %016llX\n", sysmenuIdUll);
 
         ExecuteIOSExploit();
         SYSLaunchMenu();
@@ -123,7 +104,7 @@ int main(int argc, char **argv) {
     }
     ProcUIShutdown();
 
-    DEBUG_FUNCTION_LINE("Bye!");
+    DEBUG_FUNCTION_LINE("Exiting.");
     WHBLogUdpDeinit();
 
     return 0;

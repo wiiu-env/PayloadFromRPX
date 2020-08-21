@@ -29,14 +29,13 @@
 #define acp_phys(addr) ((u32)(addr) - 0xE0000000 + 0x12900000)
 
 void instant_patches_setup(void) {
-   
     // fix 10 minute timeout that crashes MCP after 10 minutes of booting
-    *(volatile u32*)(0x05022474 - 0x05000000 + 0x081C0000) = 0xFFFFFFFF;    // NEW_TIMEOUT
-    
+    *(volatile u32 *) (0x05022474 - 0x05000000 + 0x081C0000) = 0xFFFFFFFF;    // NEW_TIMEOUT
+
     // patch default title id to system menu
-    *(volatile u32*)mcp_data_phys(0x050B817C) = *(volatile u32*)0x0017FFF0;
-    *(volatile u32*)mcp_data_phys(0x050B8180) = *(volatile u32*)0x0017FFF4;
+    *(volatile u32 *) mcp_data_phys(0x050B817C) = *(volatile u32 *) 0x0017FFF0;
+    *(volatile u32 *) mcp_data_phys(0x050B8180) = *(volatile u32 *) 0x0017FFF4;
 
     // force check USB storage on load
-    *(volatile u32*)acp_phys(0xE012202C) = 0x00000001; // find USB flag
+    *(volatile u32 *) acp_phys(0xE012202C) = 0x00000001; // find USB flag
 }

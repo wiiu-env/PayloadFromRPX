@@ -14,46 +14,20 @@
 #include <string.h>
 #include "ElfUtils.h"
 #include "gx2sploit.h"
-#include "utils/utils.h"
+
+#define JIT_ADDRESS         0x01800000
+
+#define KERN_HEAP           0xFF200000
+#define KERN_HEAP_PHYS      0x1B800000
 
 
-#define JIT_ADDRESS                    0x01800000
+#define KERN_CODE_READ      0xFFF023D4
+#define KERN_CODE_WRITE     0xFFF023F4
+#define KERN_DRVPTR         0xFFEAB530
 
-#define KERN_HEAP                    0xFF200000
-#define KERN_HEAP_PHYS                0x1B800000
-
-
-#define KERN_CODE_READ                0xFFF023D4
-#define KERN_CODE_WRITE                0xFFF023F4
-#define KERN_DRVPTR                    0xFFEAB530
-#define KERN_ADDRESS_TBL            0xFFEAB7A0
-
-#define STARTID_OFFSET                0x08
-#define METADATA_OFFSET                0x14
-#define METADATA_SIZE                0x10
-
-#define BAT_SETUP_HOOK_ADDR         0xFFF1D624
-#define BAT_SETUP_HOOK_ENTRY        0x00880000
-#define BAT4U_VAL                   0x008000FF
-#define BAT4L_VAL                   0x30800012
-
-#define BAT_SET_NOP_ADDR_1          0xFFF06B6C
-#define BAT_SET_NOP_ADDR_2          0xFFF06BF8
-#define BAT_SET_NOP_ADDR_3          0xFFF003C8
-#define BAT_SET_NOP_ADDR_4          0xFFF003CC
-#define BAT_SET_NOP_ADDR_5          0xFFF1D70C
-#define BAT_SET_NOP_ADDR_6          0xFFF1D728
-#define BAT_SET_NOP_ADDR_7          0xFFF1D82C
-
-#define BAT_SET_NOP_ADDR_8          0xFFEE11C4
-#define BAT_SET_NOP_ADDR_9          0xFFEE11C8
-
-#define ADDRESS_main_entry_hook                     0x0101c56c
-#define ADDRESS_OSTitle_main_entry_ptr              0x1005E040
-
-#define NOP_ADDR(addr) \
-        *(uint32_t*)addr = 0x60000000; \
-        asm volatile("dcbf 0, %0; icbi 0, %0" : : "r" (addr & ~31));
+#define STARTID_OFFSET      0x08
+#define METADATA_OFFSET     0x14
+#define METADATA_SIZE       0x10
 
 extern "C" void SCKernelCopyData(uint32_t addr, uint32_t src, uint32_t len);
 
@@ -63,8 +37,9 @@ static void *find_gadget(uint32_t code[], uint32_t length, uint32_t gadgets_star
 
     /* Search code before JIT area first */
     for (ptr = (uint32_t *) gadgets_start; ptr != (uint32_t *) JIT_ADDRESS; ptr++) {
-        if (!memcmp(ptr, &code[0], length))
+        if (!memcmp(ptr, &code[0], length)) {
             return ptr;
+        }
     }
 
     OSFatal("Failed to find gadget!");
@@ -131,7 +106,7 @@ int exploitThread(int argc, char **argv) {
     uint32_t gx2data[] = {0xfc2a0000};
     uint32_t gx2data_addr = (uint32_t) find_gadget(gx2data, 0x04, 0x10000000);
     uint32_t doflush[] = {0xba810008, 0x8001003c, 0x7c0803a6, 0x38210038, 0x4e800020, 0x9421ffe0, 0xbf61000c, 0x7c0802a6, 0x7c7e1b78, 0x7c9f2378, 0x90010024};
-    void (*do_flush)(uint32_t arg0, uint32_t arg1) = (void (*)(uint32_t, uint32_t)) find_gadget(doflush, 0x2C, 0x01000000) + 0x14;
+    void (*do_flush)(uint32_t arg0, uint32_t arg1) = (void (*)(uint32_t, uint32_t)) (((uint32_t) find_gadget(doflush, 0x2C, 0x01000000)) + 0x14);
 
     /* Modify a next ptr on the heap */
     uint32_t kpaddr = KERN_HEAP_PHYS + STARTID_OFFSET;
@@ -185,8 +160,8 @@ extern "C" void SC_KernelCopyData(uint32_t dst, uint32_t src, uint32_t len);
 void KernelWrite(uint32_t addr, const void *data, uint32_t length) {
     // This is a hacky workaround, but currently it only works this way. ("data" is always on the stack, so maybe a problem with mapping values from the JIT area?)
     // further testing required.
-    for (int32_t i = 0; i < length; i += 4) {
-        KernelWriteU32(addr + i, *(uint32_t *) (data + i));
+    for (uint32_t i = 0; i < length; i += 4) {
+        KernelWriteU32(addr + i, *(uint32_t *) (((uint32_t) data) + i));
     }
 }
 
@@ -201,17 +176,6 @@ void KernelWriteU32(uint32_t addr, uint32_t value) {
 
     DCFlushRange((void *) addr, 4);
     ICInvalidateRange((void *) addr, 4);
-}
-
-
-void KernelWriteU32FixedAddr(uint32_t addr, uint32_t value) {
-    ICInvalidateRange(&value, 4);
-    DCFlushRange(&value, 4);
-
-    uint32_t dst = (uint32_t) addr;
-    uint32_t src = (uint32_t) OSEffectiveToPhysical((uint32_t) &value);
-
-    SC_KernelCopyData(dst, src, 4);
 }
 
 static void SCSetupIBAT4DBAT5() {
@@ -235,7 +199,6 @@ static void SCSetupIBAT4DBAT5() {
 }
 
 extern "C" void SC_0x36_SETBATS(void);
-
 
 int DoKernelExploit(void) {
     WHBLogPrintf("Running GX2Sploit");

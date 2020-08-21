@@ -1,6 +1,5 @@
 #pragma once
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -13,16 +12,12 @@ extern "C" {
 
 int DoKernelExploit(void);
 
-void KernelWriteU32FixedAddr(uint32_t addr, uint32_t value);
 void KernelWrite(uint32_t addr, const void *data, uint32_t length);
 void kern_write(const void *addr, uint32_t value);
 
 extern int32_t Register(char *driver_name, uint32_t name_length, void *buf1, void *buf2);
 extern void CopyToSaveArea(char *driver_name, uint32_t name_length, void *buffer, uint32_t length);
 extern void set_semaphore_phys(uint32_t set_semaphore, uint32_t kpaddr, uint32_t gx2data_addr);
-
-extern void SC0x25_SetupSyscall(void);
-extern unsigned int SC0x65_ExploitCheck(unsigned int in);
 
 #ifdef __cplusplus
 }
