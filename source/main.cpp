@@ -51,6 +51,12 @@ int main(int argc, char **argv) {
     uint32_t btn = vpad_data.hold | vpad_data.trigger;
     bool loadWithoutHacks = false;
     bool kernelDone = false;
+    bool skipKernel = false;
+
+    if ((btn & VPAD_BUTTON_R) == VPAD_BUTTON_R) {
+        skipKernel = true;
+        loadWithoutHacks = true;
+    }
     if ((btn & VPAD_BUTTON_ZR) == VPAD_BUTTON_ZR) {
         loadWithoutHacks = true;
     }
@@ -61,7 +67,7 @@ int main(int argc, char **argv) {
         DoKernelExploit();
     }
 
-    if (!kernelDone) {
+    if (!kernelDone && !skipKernel) {
         if (fopen("fs:/vol/external01/wiiu/payload.elf", "r") != NULL) {
             WHBLogPrintf("We need the kernel exploit to load the payload");
             DoKernelExploit();
