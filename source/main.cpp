@@ -42,7 +42,7 @@ bool CheckRunning() {
 int main(int argc, char **argv) {
     WHBLogUdpInit();
 
-    WHBLogPrintf("Hello!");
+    DEBUG_FUNCTION_LINE("Hello!");
 
     VPADReadError err;
     VPADStatus vpad_data;
@@ -62,14 +62,14 @@ int main(int argc, char **argv) {
     }
     if ((btn & VPAD_BUTTON_ZL) == VPAD_BUTTON_ZL) {
         // In case that fopen check is not working...
-        WHBLogPrintf("Force kernel exploit");
+        DEBUG_FUNCTION_LINE("Force kernel exploit");
         kernelDone = true;
         DoKernelExploit();
     }
 
     if (!kernelDone && !skipKernel) {
         if (fopen("fs:/vol/external01/wiiu/payload.elf", "r") != NULL) {
-            WHBLogPrintf("We need the kernel exploit to load the payload");
+            DEBUG_FUNCTION_LINE("We need the kernel exploit to load the payload");
             DoKernelExploit();
         }
     }
@@ -77,10 +77,10 @@ int main(int argc, char **argv) {
     if (!loadWithoutHacks) {
         uint32_t entryPoint = load_loader_elf_from_sd(0, "wiiu/payload.elf");
         if (entryPoint != 0) {
-            WHBLogPrintf("New entrypoint: %08X", entryPoint);
+            DEBUG_FUNCTION_LINE("New entrypoint at %08X", entryPoint);
             int res = ((int (*)(int, char **)) entryPoint)(argc, argv);
             if (res > 0) {
-                WHBLogPrintf("Returning...");
+                DEBUG_FUNCTION_LINE("Returning result of payload");
                 WHBLogUdpDeinit();
                 return 0;
             }
@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
         memcpy((void *) 0xF417FFF0, &sysmenuIdUll, 8);
         DCStoreRange((void *) 0xF417FFF0, 0x8);
 
-        DEBUG_FUNCTION_LINE("Forcing start of title: %016llX\n", sysmenuIdUll);
+        DEBUG_FUNCTION_LINE("Forcing start of title: %016llX", sysmenuIdUll);
 
         ExecuteIOSExploit();
         SYSLaunchMenu();

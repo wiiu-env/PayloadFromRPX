@@ -101,7 +101,7 @@ static void InstallMain(void *data_elf) {
     unsigned char *main_text = data_elf + section_offset;
     /* Copy main .text to memory */
     if (section_offset > 0) {
-        WHBLogPrintf("%08X %08X %d", main_text_addr, main_text, main_text_len);
+        DEBUG_FUNCTION_LINE("Copy section to %08X from %08X (size: %d)", main_text_addr, main_text, main_text_len);
         memcpy((void *) (main_text_addr), (void *) main_text, main_text_len);
         DCFlushRange((void *) main_text_addr, main_text_len);
         ICInvalidateRange((void *) main_text_addr, main_text_len);

@@ -12,6 +12,7 @@
 #include <whb/log.h>
 #include <malloc.h>
 #include <string.h>
+#include <utils/logger.h>
 #include "ElfUtils.h"
 #include "gx2sploit.h"
 
@@ -201,7 +202,7 @@ static void SCSetupIBAT4DBAT5() {
 extern "C" void SC_0x36_SETBATS(void);
 
 int DoKernelExploit(void) {
-    WHBLogPrintf("Running GX2Sploit");
+    DEBUG_FUNCTION_LINE("Running GX2Sploit");
     /* Make a thread to modify the semaphore */
     OSThread *thread = (OSThread *) memalign(8, 0x1000);
     uint8_t *stack = (uint8_t *) memalign(0x40, 0x2000);
@@ -268,6 +269,6 @@ int DoKernelExploit(void) {
     /* repair data */
     KernelWrite(targetAddress, backupBuffer, sizeof(backupBuffer));
     DCFlushRange((void *) targetAddress, sizeof(backupBuffer));
-    WHBLogPrintf("GX2Sploit done");
+    DEBUG_FUNCTION_LINE("GX2Sploit done");
     return 1;
 }
