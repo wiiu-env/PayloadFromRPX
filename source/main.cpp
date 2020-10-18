@@ -83,6 +83,8 @@ int main(int argc, char **argv) {
                 DEBUG_FUNCTION_LINE("Returning result of payload");
                 WHBLogUdpDeinit();
                 return 0;
+            } else {
+                loadWithoutHacks = true;
             }
         } else {
             loadWithoutHacks = true;
