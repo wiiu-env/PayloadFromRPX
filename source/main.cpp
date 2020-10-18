@@ -6,6 +6,7 @@
 
 #include <proc_ui/procui.h>
 #include <coreinit/thread.h>
+#include <coreinit/screen.h>
 
 #include <whb/log.h>
 #include <whb/log_udp.h>
@@ -13,11 +14,14 @@
 #include <sysapp/title.h>
 #include <coreinit/cache.h>
 #include <vpad/input.h>
+#include <string>
 #include "utils/logger.h"
 #include "ElfUtils.h"
 #include "ios_exploit.h"
 
 #include "gx2sploit.h"
+
+void SplashScreen(int32_t durationInMs);
 
 bool CheckRunning() {
 
@@ -87,6 +91,7 @@ int main(int argc, char **argv) {
                 loadWithoutHacks = true;
             }
         } else {
+            SplashScreen(1000);
             loadWithoutHacks = true;
         }
     }
@@ -116,4 +121,36 @@ int main(int argc, char **argv) {
     WHBLogUdpDeinit();
 
     return 0;
+}
+
+
+void SplashScreen(int32_t durationInMs) {
+    int32_t screen_buf0_size = 0;
+
+    // Init screen and screen buffers
+    OSScreenInit();
+    screen_buf0_size = OSScreenGetBufferSizeEx(SCREEN_TV);
+    OSScreenSetBufferEx(SCREEN_TV, (void *) 0xF4000000);
+    OSScreenSetBufferEx(SCREEN_DRC, (void *) (0xF4000000 + screen_buf0_size));
+
+    OSScreenEnableEx(SCREEN_TV, 1);
+    OSScreenEnableEx(SCREEN_DRC, 1);
+
+    // Clear screens
+    OSScreenClearBufferEx(SCREEN_TV, 0);
+    OSScreenClearBufferEx(SCREEN_DRC, 0);
+
+    std::string message1 = "Failed to load sd:/wiiu/payload.elf";
+    std::string message2 = "Starting the console without any modifcations.";
+
+    OSScreenPutFontEx(SCREEN_TV, 0, 0, message1.c_str());
+    OSScreenPutFontEx(SCREEN_DRC, 0, 0, message1.c_str());
+
+    OSScreenPutFontEx(SCREEN_TV, 0, 1, message2.c_str());
+    OSScreenPutFontEx(SCREEN_DRC, 0, 1, message2.c_str());
+
+    OSScreenFlipBuffersEx(SCREEN_TV);
+    OSScreenFlipBuffersEx(SCREEN_DRC);
+
+    OSSleepTicks(OSMillisecondsToTicks(durationInMs));
 }
