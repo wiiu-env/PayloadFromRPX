@@ -4,6 +4,8 @@
 
 #include <coreinit/foreground.h>
 
+#include <nn/act/client_cpp.h>
+
 #include <proc_ui/procui.h>
 #include <coreinit/thread.h>
 #include <coreinit/screen.h>
@@ -42,6 +44,8 @@ bool CheckRunning() {
     }
     return true;
 }
+
+extern "C" void _SYSLaunchMenuWithCheckingAccount(nn::act::SlotNo slot);
 
 int main(int argc, char **argv) {
     WHBLogUdpInit();
@@ -108,7 +112,19 @@ int main(int argc, char **argv) {
         DEBUG_FUNCTION_LINE("Forcing start of title: %016llX", sysmenuIdUll);
 
         ExecuteIOSExploit();
-        SYSLaunchMenu();
+
+        nn::act::Initialize();
+        nn::act::SlotNo slot = nn::act::GetSlotNo();
+        nn::act::SlotNo defaultSlot = nn::act::GetDefaultAccount();
+        nn::act::Finalize();
+
+        if (defaultSlot) {
+            //normal menu boot
+            SYSLaunchMenu();
+        } else {
+            //show mii select
+            _SYSLaunchMenuWithCheckingAccount(slot);
+        }
     }
 
     while (CheckRunning()) {
