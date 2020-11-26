@@ -4,3 +4,4 @@ build/
 *.elf
 ios_kernel.c
 ios_kernel.h
+ios_kernel_syms.h
