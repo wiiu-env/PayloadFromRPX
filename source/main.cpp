@@ -25,6 +25,8 @@
 
 void SplashScreen(int32_t durationInMs);
 
+void forceDefaultTitleIDToWiiUMenu();
+
 bool CheckRunning() {
 
     switch (ProcUIProcessMessages(true)) {
@@ -46,6 +48,7 @@ bool CheckRunning() {
 }
 
 extern "C" void _SYSLaunchMenuWithCheckingAccount(nn::act::SlotNo slot);
+extern "C" void SYSLaunchMiiStudio(void * SysMiiStudioArgs);
 
 int main(int argc, char **argv) {
     WHBLogUdpInit();
@@ -87,10 +90,35 @@ int main(int argc, char **argv) {
         if (entryPoint != 0) {
             DEBUG_FUNCTION_LINE("New entrypoint at %08X", entryPoint);
             int res = ((int (*)(int, char **)) entryPoint)(argc, argv);
-            if (res > 0) {
+            WHBLogUdpInit();
+            if (res >= 0) {                
                 DEBUG_FUNCTION_LINE("Returning result of payload");
+                if(res & 1){
+                    DEBUG_FUNCTION_LINE("Force default title id");
+                    forceDefaultTitleIDToWiiUMenu();
+                }
+                if(res & 4){
+                    DEBUG_FUNCTION_LINE("do produi");
+                    ProcUIInit(OSSavesDone_ReadyToRelease);
+                }
+                if(res & 2){
+                    DEBUG_FUNCTION_LINE("Launch menu");
+                    SYSLaunchMenu();
+                }else if(res & 8){
+                    DEBUG_FUNCTION_LINE("Launch mii maker");
+                    SYSLaunchMiiStudio(0);
+                }
+                if(res & 4){                   
+                    DEBUG_FUNCTION_LINE("ProcUIInit done");
+                     while (CheckRunning()) {
+                        // wait.
+                        OSSleepTicks(OSMillisecondsToTicks(100));
+                    }
+                    ProcUIShutdown();
+                }
+                DEBUG_FUNCTION_LINE("Exiting.");
                 WHBLogUdpDeinit();
-                return 0;
+                return res;
             } else {
                 loadWithoutHacks = true;
             }
@@ -104,14 +132,7 @@ int main(int argc, char **argv) {
 
     if (loadWithoutHacks) {
         DEBUG_FUNCTION_LINE("Load Wii U Menu");
-        // Restore the default title id to the normal Wii U Menu.
-        unsigned long long sysmenuIdUll = _SYSGetSystemApplicationTitleId(SYSTEM_APP_ID_HOME_MENU);
-        memcpy((void *) 0xF417FFF0, &sysmenuIdUll, 8);
-        DCStoreRange((void *) 0xF417FFF0, 0x8);
-
-        DEBUG_FUNCTION_LINE("Forcing start of title: %016llX", sysmenuIdUll);
-
-        ExecuteIOSExploit();
+        forceDefaultTitleIDToWiiUMenu();
 
         nn::act::Initialize();
         nn::act::SlotNo slot = nn::act::GetSlotNo();
@@ -137,6 +158,14 @@ int main(int argc, char **argv) {
     WHBLogUdpDeinit();
 
     return 0;
+}
+
+void forceDefaultTitleIDToWiiUMenu() {// Restore the default title id to the normal Wii U Menu.
+    unsigned long long sysmenuIdUll = _SYSGetSystemApplicationTitleId(SYSTEM_APP_ID_HOME_MENU);
+    memcpy((void *) 0xF417FFF0, &sysmenuIdUll, 8);
+    DCStoreRange((void *) 0xF417FFF0, 0x8);
+    DEBUG_FUNCTION_LINE("Forcing start of title: %016llX", sysmenuIdUll);
+    ExecuteIOSExploit();
 }
 
 
