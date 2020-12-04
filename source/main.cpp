@@ -89,33 +89,14 @@ int main(int argc, char **argv) {
         uint32_t entryPoint = load_loader_elf_from_sd(0, "wiiu/payload.elf");
         if (entryPoint != 0) {
             DEBUG_FUNCTION_LINE("New entrypoint at %08X", entryPoint);
-            int res = ((int (*)(int, char **)) entryPoint)(argc, argv);
-            WHBLogUdpInit();
-            if (res >= 0) {                
-                DEBUG_FUNCTION_LINE("Returning result of payload");
-                if(res & 1){
-                    DEBUG_FUNCTION_LINE("Force default title id");
-                    forceDefaultTitleIDToWiiUMenu();
-                }
-                if(res & 4){
-                    DEBUG_FUNCTION_LINE("do produi");
-                    ProcUIInit(OSSavesDone_ReadyToRelease);
-                }
-                if(res & 2){
-                    DEBUG_FUNCTION_LINE("Launch menu");
-                    SYSLaunchMenu();
-                }else if(res & 8){
-                    DEBUG_FUNCTION_LINE("Launch mii maker");
-                    SYSLaunchMiiStudio(0);
-                }
-                if(res & 4){                   
-                    DEBUG_FUNCTION_LINE("ProcUIInit done");
-                     while (CheckRunning()) {
-                        // wait.
-                        OSSleepTicks(OSMillisecondsToTicks(100));
-                    }
-                    ProcUIShutdown();
-                }
+
+            char* arr[3];
+            arr[0] = argv[0];
+            arr[1] = (char*) "void forceDefaultTitleIDToWiiUMenu(void)";
+            arr[2] = (char*)&forceDefaultTitleIDToWiiUMenu;
+
+            int res = ((int (*)(int, char **)) entryPoint)(3, arr);
+            if (res >= 0) {
                 DEBUG_FUNCTION_LINE("Exiting.");
                 WHBLogUdpDeinit();
                 return res;
