@@ -7,6 +7,40 @@ The loaded `payload.elf` needs to be mapped to this memory area.
 Put the `payload.elf` in the `sd:/wiiu/` folder of your sd card and start the application.
 If no `payload.elf` was found on the sd card, a IOSU exploit will be executed which forces the `default title id` to the Wii U Menu (in case of `system.xml` changes)
 
+Special button combinations:
+- Hold R while launching to skip `payload.elf` launching.
+
+## Reset the default title id
+When loading this payload in a coldboot environment a payload.elf may want to force the default title id to the Wii U Menu. This loader offers some callbacks to the `payload.elf` to achieve such behaviour.
+The `payload.elf` will be loaded with some special arguments. As normal, the first argument is the name of current running RPX, but afterwards a list of callbacks is provided.
+
+Example implementation of the loader:
+```
+argc = 3;
+argv[0] = "safe.rpx";                                       // original argument
+argv[1] = "void forceDefaultTitleIDToWiiUMenu(void)";       // signature of the first callback function
+argv[2] = &forceDefaultTitleIDToWiiUMenu;                   // pointer to first callback function.
+int res = ((int (*)(int, char **)) entryPoint)(argc, arr);  // call the payload.elf with some special arguments.
+```
+
+Inside the payload.elf you may want to do something like this:
+```
+for (int i = 0; i < argc; i++) {
+            if(strcmp(argv[i], "void forceDefaultTitleIDToWiiUMenu(void)") == 0){
+                if((i + 1) < argc){
+                    i++;
+                    void (*forceDefaultTitleIDToWiiUMenu)(void) = (void (*)(void)) argv[i];
+                    forceDefaultTitleIDToWiiUMenu();
+                }
+            }
+        }
+```
+
+Currently the following callbacks are provided: 
+```
+void forceDefaultTitleIDToWiiUMenu(void) = Reverts the coldboot into a specific title by forcing it the Wii U Menu. Caution: This will perform a IOSU exploit.
+```
+
 ## Building
 Make you to have [wut](https://github.com/devkitPro/wut/) installed and use the following command for build:
 
