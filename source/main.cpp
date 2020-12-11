@@ -59,7 +59,11 @@ int main(int argc, char **argv) {
     VPADStatus vpad_data;
     VPADRead(VPAD_CHAN_0, &vpad_data, 1, &err);
 
-    uint32_t btn = vpad_data.hold | vpad_data.trigger;
+    uint32_t btn = 0;
+    if(err == VPAD_READ_SUCCESS){
+        btn = vpad_data.hold | vpad_data.trigger;
+    }
+    
     bool loadWithoutHacks = false;
     bool kernelDone = false;
     bool skipKernel = false;
