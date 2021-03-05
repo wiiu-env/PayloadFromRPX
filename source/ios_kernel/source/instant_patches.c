@@ -23,6 +23,7 @@
  ***************************************************************************/
 #include "utils.h"
 #include "types.h"
+#include "kernel_patches.h"
 
 #define mcp_rodata_phys(addr) ((u32)(addr) - 0x05060000 + 0x08220000)
 #define mcp_data_phys(addr) ((u32)(addr) - 0x05074000 + 0x08234000)
@@ -35,6 +36,14 @@ void instant_patches_setup(void) {
     // patch default title id to system menu
     *(volatile u32 *) mcp_data_phys(0x050B817C) = *(volatile u32 *) 0x0017FFF0;
     *(volatile u32 *) mcp_data_phys(0x050B8180) = *(volatile u32 *) 0x0017FFF4;
+
+    // Patch update check
+    *(volatile u32 *) (0xe22830e0 - 0xe2280000 + 0x13140000) = 0x00000000;
+    *(volatile u32 *) (0xe22b2a78 - 0xe2280000 + 0x13140000) = 0x00000000;
+    *(volatile u32 *) (0xe204fb68 - 0xe2000000 + 0x12EC0000) = 0xe3a00000;
+    
+    // Keep update patches
+    *(volatile u32 *) 0x0812A120 = ARM_BL(0x0812A120, kernel_launch_ios);
 
     // force check USB storage on load
     *(volatile u32 *) acp_phys(0xE012202C) = 0x00000001; // find USB flag
