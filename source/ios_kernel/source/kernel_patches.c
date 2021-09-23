@@ -27,6 +27,7 @@
 #include "utils.h"
 
 extern void __KERNEL_CODE_START(void);
+
 extern void __KERNEL_CODE_END(void);
 
 void kernel_launch_ios(u32 launch_address, u32 L, u32 C, u32 H) {
@@ -51,7 +52,7 @@ void kernel_launch_ios(u32 launch_address, u32 L, u32 C, u32 H) {
 void kernel_run_patches(u32 ios_elf_start) {
     section_write(ios_elf_start, (u32) __KERNEL_CODE_START, __KERNEL_CODE_START, __KERNEL_CODE_END - __KERNEL_CODE_START);
     section_write_word(ios_elf_start, 0x0812A120, ARM_BL(0x0812A120, kernel_launch_ios));
-    
+
     // update check
     section_write_word(ios_elf_start, 0xe22830e0, 0x00000000);
     section_write_word(ios_elf_start, 0xe22b2a78, 0x00000000);

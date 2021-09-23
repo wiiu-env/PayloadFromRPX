@@ -11,7 +11,7 @@
 #include <coreinit/memorymap.h>
 #include <whb/log.h>
 #include <malloc.h>
-#include <string.h>
+#include <cstring>
 #include <utils/logger.h>
 #include "ElfUtils.h"
 #include "gx2sploit.h"

@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <coreinit/time.h>
 
 #include <coreinit/foreground.h>
@@ -48,7 +48,7 @@ bool CheckRunning() {
 }
 
 extern "C" void _SYSLaunchMenuWithCheckingAccount(nn::act::SlotNo slot);
-extern "C" void SYSLaunchMiiStudio(void * SysMiiStudioArgs);
+extern "C" void SYSLaunchMiiStudio(void *SysMiiStudioArgs);
 
 int main(int argc, char **argv) {
     WHBLogUdpInit();
@@ -60,10 +60,10 @@ int main(int argc, char **argv) {
     VPADRead(VPAD_CHAN_0, &vpad_data, 1, &err);
 
     uint32_t btn = 0;
-    if(err == VPAD_READ_SUCCESS){
+    if (err == VPAD_READ_SUCCESS) {
         btn = vpad_data.hold | vpad_data.trigger;
     }
-    
+
     bool loadWithoutHacks = false;
     bool kernelDone = false;
     bool skipKernel = false;
@@ -94,10 +94,10 @@ int main(int argc, char **argv) {
         if (entryPoint != 0) {
             DEBUG_FUNCTION_LINE("New entrypoint at %08X", entryPoint);
 
-            char* arr[3];
+            char *arr[3];
             arr[0] = argv[0];
-            arr[1] = (char*) "void forceDefaultTitleIDToWiiUMenu(void)";
-            arr[2] = (char*)&forceDefaultTitleIDToWiiUMenu;
+            arr[1] = (char *) "void forceDefaultTitleIDToWiiUMenu(void)";
+            arr[2] = (char *) &forceDefaultTitleIDToWiiUMenu;
 
             int res = ((int (*)(int, char **)) entryPoint)(3, arr);
             if (res >= 0) {
@@ -155,7 +155,7 @@ void forceDefaultTitleIDToWiiUMenu() {// Restore the default title id to the nor
 
 
 void SplashScreen(int32_t durationInMs) {
-    int32_t screen_buf0_size = 0;
+    uint32_t screen_buf0_size;
 
     // Init screen and screen buffers
     OSScreenInit();
