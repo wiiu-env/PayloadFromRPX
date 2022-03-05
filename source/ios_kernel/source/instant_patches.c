@@ -21,17 +21,17 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
  ***************************************************************************/
-#include "utils.h"
-#include "types.h"
 #include "kernel_patches.h"
+#include "types.h"
+#include "utils.h"
 
-#define mcp_rodata_phys(addr) ((u32)(addr) - 0x05060000 + 0x08220000)
-#define mcp_data_phys(addr) ((u32)(addr) - 0x05074000 + 0x08234000)
-#define acp_phys(addr) ((u32)(addr) - 0xE0000000 + 0x12900000)
+#define mcp_rodata_phys(addr) ((u32) (addr) -0x05060000 + 0x08220000)
+#define mcp_data_phys(addr)   ((u32) (addr) -0x05074000 + 0x08234000)
+#define acp_phys(addr)        ((u32) (addr) -0xE0000000 + 0x12900000)
 
 void instant_patches_setup(void) {
     // fix 10 minute timeout that crashes MCP after 10 minutes of booting
-    *(volatile u32 *) (0x05022474 - 0x05000000 + 0x081C0000) = 0xFFFFFFFF;    // NEW_TIMEOUT
+    *(volatile u32 *) (0x05022474 - 0x05000000 + 0x081C0000) = 0xFFFFFFFF; // NEW_TIMEOUT
 
     // patch default title id to system menu
     *(volatile u32 *) mcp_data_phys(0x050B817C) = *(volatile u32 *) 0x0017FFF0;

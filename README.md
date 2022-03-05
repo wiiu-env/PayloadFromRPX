@@ -63,6 +63,11 @@ docker run -it --rm -v ${PWD}:/project payloadfromrpx-builder make
 docker run -it --rm -v ${PWD}:/project payloadfromrpx-builder make clean
 ```
 
+
+## Format the code via docker
+
+`docker run --rm -v ${PWD}:/src wiiuenv/clang-format:13.0.0-2 -r ./source -i`
+
 ## Credits
 - orboditilt
 - Maschell

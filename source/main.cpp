@@ -1,25 +1,25 @@
+#include <coreinit/time.h>
 #include <cstdio>
 #include <cstring>
-#include <coreinit/time.h>
 
 #include <coreinit/foreground.h>
 
 #include <nn/act/client_cpp.h>
 
-#include <proc_ui/procui.h>
-#include <coreinit/thread.h>
 #include <coreinit/screen.h>
+#include <coreinit/thread.h>
+#include <proc_ui/procui.h>
 
-#include <whb/log.h>
-#include <whb/log_udp.h>
-#include <sysapp/launch.h>
-#include <sysapp/title.h>
-#include <coreinit/cache.h>
-#include <vpad/input.h>
-#include <string>
-#include "utils/logger.h"
 #include "ElfUtils.h"
 #include "ios_exploit.h"
+#include "utils/logger.h"
+#include <coreinit/cache.h>
+#include <string>
+#include <sysapp/launch.h>
+#include <sysapp/title.h>
+#include <vpad/input.h>
+#include <whb/log.h>
+#include <whb/log_udp.h>
 
 #include "gx2sploit.h"
 
@@ -65,11 +65,11 @@ int main(int argc, char **argv) {
     }
 
     bool loadWithoutHacks = false;
-    bool kernelDone = false;
-    bool skipKernel = false;
+    bool kernelDone       = false;
+    bool skipKernel       = false;
 
     if ((btn & VPAD_BUTTON_R) == VPAD_BUTTON_R) {
-        skipKernel = true;
+        skipKernel       = true;
         loadWithoutHacks = true;
     }
     if ((btn & VPAD_BUTTON_ZR) == VPAD_BUTTON_ZR) {
@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
         forceDefaultTitleIDToWiiUMenu();
 
         nn::act::Initialize();
-        nn::act::SlotNo slot = nn::act::GetSlotNo();
+        nn::act::SlotNo slot        = nn::act::GetSlotNo();
         nn::act::SlotNo defaultSlot = nn::act::GetDefaultAccount();
         nn::act::Finalize();
 
@@ -145,7 +145,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void forceDefaultTitleIDToWiiUMenu() {// Restore the default title id to the normal Wii U Menu.
+void forceDefaultTitleIDToWiiUMenu() { // Restore the default title id to the normal Wii U Menu.
     unsigned long long sysmenuIdUll = _SYSGetSystemApplicationTitleId(SYSTEM_APP_ID_HOME_MENU);
     memcpy((void *) 0xF417FFF0, &sysmenuIdUll, 8);
     DCStoreRange((void *) 0xF417FFF0, 0x8);

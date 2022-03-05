@@ -21,9 +21,9 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
  ***************************************************************************/
-#include "types.h"
-#include "elf_patcher.h"
 #include "kernel_patches.h"
+#include "elf_patcher.h"
+#include "types.h"
 #include "utils.h"
 
 extern void __KERNEL_CODE_START(void);
@@ -34,7 +34,7 @@ void kernel_launch_ios(u32 launch_address, u32 L, u32 C, u32 H) {
     void (*kernel_launch_bootrom)(u32 launch_address, u32 L, u32 C, u32 H) = (void *) 0x0812A050;
 
     if (*(u32 *) (launch_address - 0x300 + 0x1AC) == 0x00DFD000) {
-        int level = disable_interrupts();
+        int level                     = disable_interrupts();
         unsigned int control_register = disable_mmu();
 
         u32 ios_elf_start = launch_address + 0x804 - 0x300;
@@ -58,4 +58,3 @@ void kernel_run_patches(u32 ios_elf_start) {
     section_write_word(ios_elf_start, 0xe22b2a78, 0x00000000);
     section_write_word(ios_elf_start, 0xe204fb68, 0xe3a00000);
 }
-
