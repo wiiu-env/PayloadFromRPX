@@ -3,6 +3,7 @@
 #include "utils/logger.h"
 #include <coreinit/cache.h>
 #include <coreinit/foreground.h>
+#include <coreinit/memdefaultheap.h>
 #include <coreinit/screen.h>
 #include <coreinit/thread.h>
 #include <coreinit/time.h>
@@ -41,6 +42,15 @@ bool CheckRunning() {
             break;
     }
     return true;
+}
+
+extern "C" void __init_wut_malloc();
+
+// Override __preinit_user to use the Cafe OS heap
+void __preinit_user(MEMHeapHandle *outMem1,
+                    MEMHeapHandle *outFG,
+                    MEMHeapHandle *outMem2) {
+    __init_wut_malloc();
 }
 
 int main(int argc, char **argv) {
