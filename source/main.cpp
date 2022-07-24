@@ -1,19 +1,15 @@
-#include <coreinit/time.h>
-#include <cstdio>
-#include <cstring>
-
-#include <coreinit/foreground.h>
-
-#include <nn/act/client_cpp.h>
-
-#include <coreinit/screen.h>
-#include <coreinit/thread.h>
-#include <proc_ui/procui.h>
-
 #include "ElfUtils.h"
 #include "ios_exploit.h"
 #include "utils/logger.h"
 #include <coreinit/cache.h>
+#include <coreinit/foreground.h>
+#include <coreinit/screen.h>
+#include <coreinit/thread.h>
+#include <coreinit/time.h>
+#include <cstdio>
+#include <cstring>
+#include <nn/act/client_cpp.h>
+#include <proc_ui/procui.h>
 #include <string>
 #include <sysapp/launch.h>
 #include <sysapp/title.h>
@@ -46,9 +42,6 @@ bool CheckRunning() {
     }
     return true;
 }
-
-extern "C" void _SYSLaunchMenuWithCheckingAccount(nn::act::SlotNo slot);
-extern "C" void SYSLaunchMiiStudio(void *SysMiiStudioArgs);
 
 int main(int argc, char **argv) {
     WHBLogUdpInit();
@@ -146,7 +139,7 @@ int main(int argc, char **argv) {
 }
 
 void forceDefaultTitleIDToWiiUMenu() { // Restore the default title id to the normal Wii U Menu.
-    unsigned long long sysmenuIdUll = _SYSGetSystemApplicationTitleId(SYSTEM_APP_ID_HOME_MENU);
+    unsigned long long sysmenuIdUll = _SYSGetSystemApplicationTitleId(SYSTEM_APP_ID_WII_U_MENU);
     memcpy((void *) 0xF417FFF0, &sysmenuIdUll, 8);
     DCStoreRange((void *) 0xF417FFF0, 0x8);
     DEBUG_FUNCTION_LINE("Forcing start of title: %016llX", sysmenuIdUll);
