@@ -174,7 +174,7 @@ void SplashScreen(int32_t durationInMs) {
     OSScreenClearBufferEx(SCREEN_DRC, 0);
 
     std::string message1 = "Failed to load sd:/wiiu/payload.elf";
-    std::string message2 = "Starting the console without any modifcations.";
+    std::string message2 = "Starting the console without any modifications.";
 
     OSScreenPutFontEx(SCREEN_TV, 0, 0, message1.c_str());
     OSScreenPutFontEx(SCREEN_DRC, 0, 0, message1.c_str());
