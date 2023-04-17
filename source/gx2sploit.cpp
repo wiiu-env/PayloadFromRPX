@@ -74,7 +74,7 @@ int exploitThread(int argc, char **argv) {
     OSDynLoad_Acquire("gx2.rpl", &gx2_handle);
 
     void (*pGX2SetSemaphore)(uint64_t * sem, int action);
-    OSDynLoad_FindExport(gx2_handle, 0, "GX2SetSemaphore", (void **) &pGX2SetSemaphore);
+    OSDynLoad_FindExport(gx2_handle, OS_DYNLOAD_EXPORT_FUNC, "GX2SetSemaphore", (void **) &pGX2SetSemaphore);
     uint32_t set_semaphore = ((uint32_t) pGX2SetSemaphore) + 0x2C;
 
     uint32_t gx2_init_attributes[9];
